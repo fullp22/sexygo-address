@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  icon      String   @default("•")
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+  sites     Site[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Site {
+  id         Int      @id @default(autoincrement())
+  name       String
+  url        String
+  color      String   @default("#222222")
+  sortOrder  Int      @default(0)
+  active     Boolean  @default(true)
+  clicks     Int      @default(0)
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([categoryId, sortOrder])
+}
+
+model Banner {
+  id          Int      @id @default(autoincrement())
+  title       String
+  subtitle    String?
+  imageUrl    String?
+  videoUrl    String?
+  linkUrl     String
+  size        String   @default("SMALL")
+  sortOrder   Int      @default(0)
+  active      Boolean  @default(true)
+  startAt     DateTime?
+  endAt       DateTime?
+  impressions Int      @default(0)
+  clicks      Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([active, sortOrder])
+}
+
+model SiteSetting {
+  id                 Int      @id @default(1)
+  telegramSupportUrl String   @default("")
+  updatedAt          DateTime @updatedAt
+}
